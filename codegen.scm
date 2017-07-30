@@ -23,7 +23,8 @@
 ; allows eval to use defines functions below
 (define-namespace-anchor ns-anchor)
 (define ns (namespace-anchor->namespace ns-anchor))
-
+(delete-file "out.asm")
+(define out (open-output-file "out.asm"))
 ;ast data
 (define ast
 '(program
@@ -33,7 +34,8 @@
    	(while (neq (var i int) (var j int))
     	((if (gt (var i int) (var j int))
          	((assign (var i int) (minus (var i int) (var j int))))
-         	((assign (var j int) (minus (var j int) (var i int))))))
+         	((assign (var j int) (minus (var j int) (var i int))))
+         ))
     )
    	(call (func putint int void) ((var i int))))))
 
@@ -51,7 +53,7 @@
 		(cond ((pair? root)
 				; stmt is car root
 				(stmt (car root))
-				; body is cdr root
+					; body is cdr root
 				(body (cdr root))))))
 
 (define stmt 
@@ -67,32 +69,37 @@
 		;eval expr first and load 
 		(expr  ( cadr root))
 		;assume value loaded into EAX
-		(display "mov ")
+		(display "mov " out)
 		(var   ( cdar root))
-		(displayln ", EAX")
+		(displayln ", EAX" out)
 		))
 
 
 (define if
 	(lambda (root)
 		;first eval expression
-		(displayln "_if:")
+		(displayln "_if:" out)
 		(expr   ( car root))
-		; jump to end if zero
-		(displayln "jz _end_if")
+		; jump to true label, else false 
+		(displayln "_if_true" out)
 		;get the first of the remaining list
-		(body  ( cadr root))
-		(displayln "_end_if:")
+		(body  (caddr root))
+		(displayln "jmp _end_if" out)
+		(displayln "_if_true:" out)
+		(body (cadr root))
+		(displayln "_end_if:" out)
+		
 ))
 
 (define while
 	(lambda (root)
-		(displayln "_while:")
+		(displayln "_while:" out)
 		(expr   ( car root))
-		(displayln "jz _end_while")
+		(displayln "_end_while" out)
 		;get the first of the remaining list
 		(body  ( cadr root))
-		(displayln "_end_while:")))
+		(displayln "jmp _while" out)
+		(displayln "_end_while:" out)))
 
 
 (define expr
@@ -104,8 +111,8 @@
 (define call
 	(lambda (root)
 		;push operands onto stack
-		(displayln "call")
-		(displayln root)
+		(displayln "TODO CALL" out)
+		(displayln root out)
 
 		))
 
@@ -113,60 +120,79 @@
 (define var
 	(lambda (root)
 		(cond ((eq? (cadr root) 'int)
-					(display "DWORD"))
+					(display "DWORD" out))
 				((eq? (cadr root) 'long)
-					(display "QWORD"))
+					(display "QWORD" out))
 		)
-		(display " PTR [" )
-		(display (car root))
-		(display "]" )
+		(display " PTR ["  out)
+		(display (car root) out)
+		(display "]" out)
 
 		))
 
 ;----------------------OPERATORS----------------
 (define eq
 	(lambda (root)
-		(display "cmp")
+		(display "mov EAX, " out)
 		(expr (car root))
-		(display ",") ;comapre ebx with other
-		(expr (cdr root))))
-		(display "\n")
+		(newline	out)
+		(display "mov EBX, " out)
+		(expr (cadr root))
+		(newline	out)
+		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
+		(display "je " out)
+))
 
 (define neq
 	(lambda (root)
-		(display "mov EBX, ") ;move firs expression into ebx
+		(display "mov EAX, " out)
 		(expr (car root))
-		(display "\nneg EBX\n") ;neg ebx, then compare
-		(display "cmp EBX,") ;comapre ebx with other
+		(newline	out)
+		(display "mov EBX, " out)
 		(expr (cadr root))
-		(display "\n")
+		(newline	out)
+		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
+		(display "jne " out)
 		))
-
 
 (define gt
 	(lambda (root)
-		(display "TODO GT")
-		(displayln root)))
+		(display "mov EAX, " out)
+		(expr (car root))
+		(newline	out)
+		(display "mov EBX, " out)
+		(expr (cadr root))
+		(newline	out)
+		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
+		(display "jg " out)
+		))
 
 
 (define lt
 	(lambda (root)
-		(display "TODO LT")
-		(displayln root)))
-
+		(display "mov EAX, " out)
+		(expr (car root))
+		(newline	out)
+		(display "mov EBX, " out)
+		(expr (cadr root))
+		(newline	out)
+		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
+		(display "jl " out)
+		))
 
 (define plus
 	(lambda (root)
-		(display "TODO PLUS")
-		(displayln root)))
+		(display "TODO PLUS" out)
+		(displayln root out)))
 
 (define minus
 	(lambda (root)
-		(display "TODO MINUS")
-		(displayln root)))
+		(display "TODO MINUS" out)
+		(displayln root out)))
 
 
 ;------------------------AST EVAL----------------
 ; AST is (id (root))
 ; Evaluate id on the root 
 ((eval (car ast) ns) (cdr ast))
+(close-output-port out)
