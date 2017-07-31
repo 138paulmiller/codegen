@@ -104,31 +104,37 @@
 
 (define expr
 	(lambda (root)
-		((eval (car root) ns) (cdr root))
-	))
+		((eval (car root) ns) (cdr root))))
 
 
 (define call
 	(lambda (root)
-		;push operands onto stack
-		(displayln "TODO CALL" out)
-		(displayln root out)
+		;push params onto stack
+		(params (cadr root))
+		(display "call " out)
+		(displayln (cadar root) out)
 
 		))
 
+(define params 
+	(lambda (root)
+		(cond ((pair? root) 
+			(display "push " out)
+			(expr (car root))
+			(newline out)
+			(params (cdr root))
+		))
+	)) 
 
 (define var
 	(lambda (root)
 		(cond ((eq? (cadr root) 'int)
 					(display "DWORD" out))
 				((eq? (cadr root) 'long)
-					(display "QWORD" out))
-		)
+					(display "QWORD" out)))
 		(display " PTR ["  out)
 		(display (car root) out)
-		(display "]" out)
-
-		))
+		(display "]" out)))
 
 ;----------------------OPERATORS----------------
 (define eq

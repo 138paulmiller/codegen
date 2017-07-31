@@ -1,8 +1,6 @@
-TODO CALL
-((func getint void int) ())
+call getint
 mov DWORD PTR [i], EAX
-TODO CALL
-((func getint void int) ())
+call getint
 mov DWORD PTR [j], EAX
 _while:
 mov EAX, DWORD PTR [i]
@@ -23,5 +21,5 @@ mov DWORD PTR [i], EAX
 _end_if:
 jmp _while
 _end_while:
-TODO CALL
-((func putint int void) ((var i int)))
+push DWORD PTR [i]
+call putint
