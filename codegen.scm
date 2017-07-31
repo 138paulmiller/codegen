@@ -112,9 +112,7 @@
 		;push params onto stack
 		(params (cadr root))
 		(display "call " out)
-		(displayln (cadar root) out)
-
-		))
+		(displayln (cadar root) out)))
 
 (define params 
 	(lambda (root)
@@ -122,9 +120,7 @@
 			(display "push " out)
 			(expr (car root))
 			(newline out)
-			(params (cdr root))
-		))
-	)) 
+			(params (cdr root)))))) 
 
 (define var
 	(lambda (root)
@@ -158,8 +154,7 @@
 		(expr (cadr root))
 		(newline	out)
 		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
-		(display "jne " out)
-		))
+		(display "jne " out)))
 
 (define gt
 	(lambda (root)
@@ -170,8 +165,7 @@
 		(expr (cadr root))
 		(newline	out)
 		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
-		(display "jg " out)
-		))
+		(display "jg " out)))
 
 
 (define lt
@@ -183,18 +177,25 @@
 		(expr (cadr root))
 		(newline	out)
 		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
-		(display "jl " out)
-		))
+		(display "jl " out)))
 
 (define plus
 	(lambda (root)
-		(display "TODO PLUS" out)
-		(displayln root out)))
+		(display "mov EAX, " out)
+		(expr (car root))
+		(newline out)
+		(display "add EAX, " out)
+		(displayln (cdr root) out)
+		(newline out)))
 
 (define minus
 	(lambda (root)
-		(display "TODO MINUS" out)
-		(displayln root out)))
+		(display "mov EAX, " out)
+		(expr (car root))
+		(newline out)
+		(display "sub EAX, " out)
+		(expr (cadr root))
+		(newline out)))
 
 
 ;------------------------AST EVAL----------------

@@ -12,11 +12,13 @@ mov EAX, DWORD PTR [i]
 mov EBX, DWORD PTR [j]
 cmp EAX, EBX
 jg _if_true
-TODO MINUS((var j int) (var i int))
+mov EAX, DWORD PTR [j]
+sub EAX, DWORD PTR [i]
 mov DWORD PTR [j], EAX
 jmp _end_if
 _if_true:
-TODO MINUS((var i int) (var j int))
+mov EAX, DWORD PTR [i]
+sub EAX, DWORD PTR [j]
 mov DWORD PTR [i], EAX
 _end_if:
 jmp _while
