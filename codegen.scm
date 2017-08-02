@@ -45,7 +45,7 @@
 	(lambda (root)
 		; root is (body)
 		(displayln "SECTION .text" out)
-		(displayln "global main" out)
+		(displayln "global \tmain" out)
 		(displayln "main:" out)
 		(body (car root))))
 
@@ -71,7 +71,7 @@
 		;eval expr first and load 
 		(expr  ( cadr root))
 		;assume value loaded into EAX
-		(display "mov " out)
+		(display "mov\t" out)
 		(var   ( cdar root))
 		(displayln ", EAX" out)
 		))
@@ -85,7 +85,7 @@
 		(displayln "_if_true" out)
 		;get the first of the remaining list
 		(body  (caddr root))
-		(displayln "jmp _end_if" out)
+		(displayln "jmp\t_end_if" out)
 		(displayln "_if_true:" out)
 		(body (cadr root))
 		(displayln "_end_if:" out)
@@ -96,13 +96,13 @@
 	(lambda (root)
 		(displayln "_while:" out)
 		(expr   ( car root))
-		(displayln "_while_true" out)
+		(displayln "\t_while_true" out)
 		;if it falls thru cmp
-		(displayln "jmp _end_while" out)
+		(displayln "jmp\t_end_while" out)
 		(displayln "_while_true:" out)
 		;get the first of the remaining list
 		(body  ( cadr root))
-		(displayln "jmp _while" out)
+		(displayln "jmp\t_while" out)
 		(displayln "_end_while:" out)))
 
 
@@ -115,13 +115,13 @@
 	(lambda (root)
 		;push params onto stack
 		(params (cadr root))
-		(display "call " out)
+		(display "call\t" out)
 		(displayln (cadar root) out)))
 
 (define params 
 	(lambda (root)
 		(cond ((pair? root) 
-			(display "push " out)
+			(display "push\t" out)
 			(expr (car root))
 			(newline out)
 			(params (cdr root)))))) 
@@ -139,65 +139,65 @@
 ;----------------------OPERATORS----------------
 (define eq
 	(lambda (root)
-		(display "mov EAX, " out)
+		(display "mov\tEAX, " out)
 		(expr (car root))
 		(newline	out)
-		(display "mov EBX, " out)
+		(display "mov\tEBX, " out)
 		(expr (cadr root))
 		(newline	out)
-		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
+		(displayln "cmp\tEAX, EBX" out) ;comapre ebx with other
 		(display "je " out)
 ))
 
 (define neq
 	(lambda (root)
-		(display "mov EAX, " out)
+		(display "mov\tEAX, " out)
 		(expr (car root))
 		(newline	out)
-		(display "mov EBX, " out)
+		(display "mov\tEBX, " out)
 		(expr (cadr root))
 		(newline	out)
-		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
+		(displayln "cmp\tEAX, EBX" out) ;comapre ebx with other
 		(display "jne " out)))
 
 (define gt
 	(lambda (root)
-		(display "mov EAX, " out)
+		(display "mov\tEAX, " out)
 		(expr (car root))
 		(newline	out)
-		(display "mov EBX, " out)
+		(display "mov\tEBX, " out)
 		(expr (cadr root))
 		(newline	out)
-		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
+		(displayln "cmp\tEAX, EBX" out) ;comapre ebx with other
 		(display "jg " out)))
 
 
 (define lt
 	(lambda (root)
-		(display "mov EAX, " out)
+		(display "mov\tEAX, " out)
 		(expr (car root))
 		(newline	out)
-		(display "mov EBX, " out)
+		(display "mov\tEBX, " out)
 		(expr (cadr root))
 		(newline	out)
-		(displayln "cmp EAX, EBX" out) ;comapre ebx with other
+		(displayln "cmp\tEAX, EBX" out) ;comapre ebx with other
 		(display "jl " out)))
 
 (define plus
 	(lambda (root)
-		(display "mov EAX, " out)
+		(display "mov\tEAX, " out)
 		(expr (car root))
 		(newline out)
-		(display "add EAX, " out)
+		(display "add\tEAX, " out)
 		(displayln (cdr root) out)
 		(newline out)))
 
 (define minus
 	(lambda (root)
-		(display "mov EAX, " out)
+		(display "mov\tEAX, " out)
 		(expr (car root))
 		(newline out)
-		(display "sub EAX, " out)
+		(display "sub\tEAX, " out)
 		(expr (cadr root))
 		(newline out)))
 

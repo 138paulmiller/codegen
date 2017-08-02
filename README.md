@@ -1,2 +1,6 @@
 # codegen
-Generates x86 Asssembly from an AST in Scheme
+Generates Nasm-Like Psuedo Asssembly from an AST in Scheme
+
+## Testing 
+ .
+
