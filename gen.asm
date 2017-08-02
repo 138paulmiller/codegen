@@ -1,17 +1,10 @@
-global main
-extern printf
-
-SECTION .data
-i: dd 30
-j: dd 20
-fmt: db "GCD: %d",0
-
 SECTION .text
+global main
 main:
-push    ebp		; set up stack frame
-mov     ebp,esp
-
-;gen section
+call getint
+mov DWORD [i], EAX
+call getint
+mov DWORD [j], EAX
 _while:
 mov EAX, DWORD [i]
 mov EBX, DWORD [j]
@@ -35,13 +28,4 @@ _end_if:
 jmp _while
 _end_while:
 push DWORD [i]
-;end gen
-
-push    DWORD fmt	
-call    printf	
-add     esp, 8		; pop stack 3 push times 4 bytes
-
-mov     esp, ebp	; takedown stack frame
-pop     ebp		; same as "leave" op
-
-mov	eax,0		;  normal,
+call putint

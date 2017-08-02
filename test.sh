@@ -1,2 +1,2 @@
 #!/bin/sh
-make interpret; cat out.asm
+make interpret; cat gen.asm

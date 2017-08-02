@@ -23,8 +23,8 @@
 ; allows eval to use defines functions below
 (define-namespace-anchor ns-anchor)
 (define ns (namespace-anchor->namespace ns-anchor))
-(delete-file "out.asm")
-(define out (open-output-file "out.asm"))
+(delete-file "gen.asm")
+(define out (open-output-file "gen.asm"))
 ;ast data
 (define ast
 '(program
@@ -41,10 +41,12 @@
 
 
 ;code gen functions
-
 (define program 
 	(lambda (root)
 		; root is (body)
+		(displayln "SECTION .text" out)
+		(displayln "global main" out)
+		(displayln "main:" out)
 		(body (car root))))
 
 (define body 
@@ -78,7 +80,6 @@
 (define if
 	(lambda (root)
 		;first eval expression
-		(displayln "_if:" out)
 		(expr   ( car root))
 		; jump to true label, else false 
 		(displayln "_if_true" out)
@@ -95,7 +96,10 @@
 	(lambda (root)
 		(displayln "_while:" out)
 		(expr   ( car root))
-		(displayln "_end_while" out)
+		(displayln "_while_true" out)
+		;if it falls thru cmp
+		(displayln "jmp _end_while" out)
+		(displayln "_while_true:" out)
 		;get the first of the remaining list
 		(body  ( cadr root))
 		(displayln "jmp _while" out)
@@ -128,7 +132,7 @@
 					(display "DWORD" out))
 				((eq? (cadr root) 'long)
 					(display "QWORD" out)))
-		(display " PTR ["  out)
+		(display " ["  out)
 		(display (car root) out)
 		(display "]" out)))
 
